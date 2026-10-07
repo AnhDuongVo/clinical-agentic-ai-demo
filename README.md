@@ -20,6 +20,14 @@ the full projects produce it with Nemotron, NeMo Agent Toolkit, NeMo Guardrails 
 
 ## The four tabs
 
+| consult-to-note | trial-matcher |
+|---|---|
+| ![consult-to-note](docs/consult-to-note.gif) | ![trial-matcher](docs/trial-matcher.gif) |
+| **csr-assistant** | **ai-scientist** |
+| ![csr-assistant](docs/csr-assistant.gif) | ![ai-scientist](docs/ai-scientist.gif) |
+
+Full-quality videos are on [anhduongvo.github.io](https://anhduongvo.github.io/projects/clinical-agentic-ai/).
+
 - **consult-to-note**: two consultations; the note's numbers are checked against the transcript, and an error can be planted to see it flagged.
 - **trial-matcher**: two patients; thresholds are evaluated in code, a missing lab value is reported as unknown, and the record can be edited.
 - **csr-assistant**: two report sections; each drafted sentence is checked against the table row it cites, and the flagged number can be corrected.
