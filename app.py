@@ -1,11 +1,11 @@
-"""Clinical Agentic AI, an interactive demo of four healthcare agents.
+"""Interactive demo of four clinical AI agents.
 
 Run locally:   streamlit run app.py
 Deploy:        Hugging Face Spaces (SDK: Streamlit) or Streamlit Community Cloud.
 
-The demo runs each project's deterministic VERIFICATION logic live (the part that catches wrong numbers,
-refuses to guess, and ranks candidates). The generated clinical text shown is a bundled sample; set an
-NVIDIA_API_KEY and install the full project to produce it with the real models.
+The page runs each project's verification logic (citation checks, number checks, eligibility rules,
+candidate ranking). The generated clinical text is a bundled sample. To produce it with the real models,
+install the full project and set an NVIDIA_API_KEY.
 """
 
 from __future__ import annotations
@@ -14,98 +14,108 @@ import streamlit as st
 
 import samples
 from core import check_number, eval_threshold, rank_candidates
+from ui import check_card, hero, info, inject_css, rank_table, section, source_card
 
-st.set_page_config(page_title="Clinical Agentic AI, demo", page_icon="🩺", layout="centered")
+st.set_page_config(page_title="Clinical AI agents, demo", page_icon="🩺", layout="centered")
+inject_css()
 
-st.title("Clinical Agentic AI")
-st.caption(
-    "Four open examples of agentic AI for healthcare, on the open NVIDIA stack. "
-    "One idea runs through all of them: a fluent wrong answer is the real risk, so the model cites its "
-    "evidence, code checks every number, and a human signs off."
+hero(
+    "Demo",
+    "Four clinical AI agents",
+    "One agent per tab. The citation and number checks run in this page; the generated text is a bundled sample. "
+    "No API key is needed.",
 )
-st.info(
-    "Offline demo. The verification logic below runs live in your browser session. The generated text is a "
-    "bundled sample; the real pipelines run Nemotron, NeMo Agent Toolkit, Guardrails and BioNeMo on the "
-    "NVIDIA stack.",
-    icon="ℹ️",
-)
+info("Built with the NVIDIA NeMo stack (NeMo Agent Toolkit, NIM, Nemotron, Guardrails, BioNeMo). "
+     "Change the inputs to see how the checks respond.")
 
 tabs = st.tabs(["consult-to-note", "trial-matcher", "csr-assistant", "ai-scientist"])
 
 # ---------------------------------------------------------------- consult-to-note
 with tabs[0]:
-    st.subheader("Ambient clinical documentation")
-    st.write("A consultation transcript becomes a structured note. Every sentence cites a transcript line, "
-             "and every number is verified against it in code.")
-    with st.expander("Transcript (source)"):
-        for sid, line in samples.CONSULT_TRANSCRIPT:
-            st.markdown(f"`{sid}`  {line}")
-
-    inject = st.checkbox("Inject a dose error (claim 250 mg instead of 25 mg)", value=False, key="c2n_inject")
-    st.markdown("**Generated note** (sample), with live checks:")
-    for sentence, sid, claimed in samples.CONSULT_NOTE:
+    hero("consult-to-note", "Ambient clinical documentation",
+         "Turns a consultation transcript into a structured note. Each sentence cites a transcript line, "
+         "and the numbers in it are checked against that line.")
+    case_name = st.selectbox("Consultation", list(samples.CONSULT_CASES), key="c2n_case")
+    case = samples.CONSULT_CASES[case_name]
+    section("Transcript")
+    source_card(case["transcript"])
+    plant = st.checkbox(case["error_label"], value=False, key=f"c2n_err_{case_name}")
+    err_sid, err_val, err_from, err_to = case["error"]
+    section("Generated note")
+    for sentence, sid, claimed in case["note"]:
         if claimed is None:
-            st.markdown(f"- {sentence}  \n  <span style='color:gray'>cite {sid}</span>", unsafe_allow_html=True)
+            check_card(sentence, "neutral", "no number to check", cite=sid)
             continue
         shown = claimed
-        if inject and sid == "t11":
-            shown = 250.0
-            sentence = sentence.replace("25 mg", "250 mg")
-        chk = check_number(sentence, shown, sid, samples.CONSULT_SOURCES)
+        if plant and sid == err_sid:
+            shown = err_val
+            sentence = sentence.replace(err_from, err_to)
+        chk = check_number(sentence, shown, sid, case["sources"])
         if chk.ok:
-            st.markdown(f"- ✅ {sentence}  \n  <span style='color:gray'>cite {sid}, matches {chk.source_value:g}</span>", unsafe_allow_html=True)
+            check_card(sentence, "ok", f"{chk.claimed:g} matches the transcript", cite=sid)
         else:
-            st.markdown(f"- 🚩 {sentence}  \n  <span style='color:#b4561e'>flagged: claims {chk.claimed:g}, source says {chk.source_value:g} (cite {sid})</span>", unsafe_allow_html=True)
-    st.caption("The checker reads the cited transcript line and compares the number. A wrong dose is caught before a human ever sees the note.")
+            check_card(sentence, "flag", f"the note says {chk.claimed:g}, the transcript says {chk.source_value:g}", cite=sid)
+    st.markdown('<div class="note">Flagged sentences go back to the clinician for review before the note is signed.</div>', unsafe_allow_html=True)
 
 # ---------------------------------------------------------------- trial-matcher
 with tabs[1]:
-    st.subheader("Clinical-trial screening")
-    st.write("A patient record is checked against a trial's criteria. Thresholds are decided in code. "
-             "A missing or stale value returns **unknown**, never a guess.")
-    col1, col2, col3 = st.columns(3)
-    age = col1.number_input("Age", value=54.0, step=1.0)
-    hba1c = col2.number_input("HbA1c (%)", value=7.2, step=0.1)
-    has_egfr = col3.checkbox("eGFR on record", value=False)
-    egfr = col3.number_input("eGFR", value=60.0, step=1.0) if has_egfr else None
-
+    hero("trial-matcher", "Clinical-trial screening",
+         "Checks a patient record against a trial's eligibility criteria. Thresholds are evaluated in code; "
+         "a missing value is reported as unknown rather than decided.")
+    patient_name = st.selectbox("Patient", list(samples.TRIAL_PATIENTS), key="tm_patient")
+    preset = samples.TRIAL_PATIENTS[patient_name]
+    k = patient_name[:9]
+    section("Record (editable)")
+    c1, c2, c3 = st.columns(3)
+    age = c1.number_input("Age", value=preset["age"], step=1.0, key=f"age_{k}")
+    hba1c = c2.number_input("HbA1c (%)", value=preset["hba1c"], step=0.1, key=f"hba1c_{k}")
+    has_egfr = c3.checkbox("eGFR on record", value=preset["egfr"] is not None, key=f"has_egfr_{k}")
+    egfr = c3.number_input("eGFR", value=preset["egfr"] if preset["egfr"] is not None else 60.0, step=1.0, key=f"egfr_{k}") if has_egfr else None
     values = {"age": age, "hba1c": hba1c, "egfr": egfr}
-    st.markdown("**Per-criterion verdicts:**")
+    section("Criteria")
     for crit, key, op, bound in samples.TRIAL_CRITERIA:
         v = eval_threshold(crit, values[key], op, bound, key)
-        icon = {"met": "✅", "not met": "⛔", "unknown": "❓"}[v.status]
-        st.markdown(f"- {icon} **{crit}**: {v.status}  \n  <span style='color:gray'>{v.basis}, confidence {v.confidence:.2f}</span>", unsafe_allow_html=True)
-    st.caption("Uncheck 'eGFR on record' to see the criterion return 'unknown' rather than a false decision.")
+        status = {"met": "ok", "not met": "flag", "unknown": "unknown"}[v.status]
+        check_card(crit, status, f"{v.basis}, confidence {v.confidence:.2f}", label=v.status)
+    st.markdown('<div class="note">A study coordinator reviews the result before the patient is contacted. Criteria that need reading rather than a threshold are handled by the model in the full project.</div>', unsafe_allow_html=True)
 
 # ---------------------------------------------------------------- csr-assistant
 with tabs[2]:
-    st.subheader("Regulatory writing (ICH E3)")
-    st.write("A drafted study report is checked sentence by sentence: every number is verified in code "
-             "against the cited source table row.")
-    with st.expander("Source table (cited rows)"):
-        for rid, val in samples.CSR_TABLE.items():
-            st.markdown(f"`{rid}`  value = {val:g}")
-    st.markdown("**Drafted report** (sample), with live checks:")
-    for sentence, rid, claimed in samples.CSR_DRAFT:
-        chk = check_number(sentence, claimed, rid, samples.CSR_TABLE)
+    hero("csr-assistant", "Clinical study report review",
+         "Checks the sentences of a drafted report against the source table rows they cite.")
+    sec_name = st.selectbox("Section", list(samples.CSR_SECTIONS), key="csr_section")
+    sec = samples.CSR_SECTIONS[sec_name]
+    section("Source table")
+    source_card([(rid, f"value = {val:g}") for rid, val in sec["table"].items()])
+    edit_idx, edit_label = sec["editable"]
+    default_val = sec["draft"][edit_idx][2]
+    edited = st.number_input(edit_label, value=float(default_val), step=0.01, format="%.2f", key=f"csr_edit_{sec_name}")
+    section("Drafted sentences")
+    for i, (sentence, rid, claimed) in enumerate(sec["draft"]):
+        val = edited if i == edit_idx else claimed
+        shown = sentence
+        if i == edit_idx and abs(val - claimed) > 1e-9:
+            shown = sentence.replace(f"{claimed:g}", f"{val:g}")
+        chk = check_number(shown, val, rid, sec["table"])
         if chk.ok:
-            st.markdown(f"- ✅ {sentence}  \n  <span style='color:gray'>cite {rid}</span>", unsafe_allow_html=True)
+            check_card(shown, "ok", f"{chk.claimed:g} matches row {rid}", cite=rid)
         else:
-            st.markdown(f"- 🚩 {sentence}  \n  <span style='color:#b4561e'>flagged: claims {chk.claimed:g}, source row {rid} says {chk.source_value:g}</span>", unsafe_allow_html=True)
-    st.caption("A reported -1.4 is caught against the table's -1.21. A wrong number in a clinical study report is a regulatory finding, not a typo.")
+            check_card(shown, "flag", f"the draft says {chk.claimed:g}, row {rid} says {chk.source_value:g}", cite=rid)
+    st.markdown('<div class="note">Whole counts have to match exactly; percentages may be rounded. Flagged sentences are listed in the review report for the medical writer.</div>', unsafe_allow_html=True)
 
 # ---------------------------------------------------------------- ai-scientist
 with tabs[3]:
-    st.subheader("Protein binder design on BioNeMo")
-    st.write("For a target protein, the agent chains the BioNeMo models (RFdiffusion, ProteinMPNN, Boltz-2) "
-             "and ranks the candidates. This tab runs a **deterministic simulator** live, so no GPU or key is needed.")
-    target = st.text_input("Target protein", value=samples.AI_TARGET)
-    n = st.slider("Number of candidates", 3, 10, 5)
-    ranked = rank_candidates(target, n=n)
-    st.table(ranked)
-    st.caption("Scores are simulated and meaningless; this shows the orchestration and ranking, not the biology. "
-               "The real pipeline folds each binder WITH the target and scores the complex. One flag switches the "
-               "simulator to the real BioNeMo NIMs.")
+    hero("ai-scientist", "Protein binder design",
+         "Chains RFdiffusion, ProteinMPNN and Boltz-2 and ranks the candidates. This demo uses a built-in "
+         "simulator instead of the real models, so the scores are placeholders.")
+    section("Run settings")
+    c1, c2, c3 = st.columns([2, 1, 1])
+    target = c1.selectbox("Target protein", samples.AI_TARGETS, key="sci_target")
+    n = c2.slider("Candidates", 3, 10, 5, key="sci_n")
+    seed = c3.slider("Seed", 0, 5, 0, key="sci_seed")
+    section("Ranked candidates")
+    rank_table(rank_candidates(target, n=n, seed=seed))
+    st.markdown('<div class="note">In the full project each binder is folded together with the target and the complex is scored; one flag switches the simulator to the real BioNeMo NIMs.</div>', unsafe_allow_html=True)
 
 st.divider()
 st.markdown(

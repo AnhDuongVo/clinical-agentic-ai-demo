@@ -1,8 +1,8 @@
 """The verification logic behind the demo, as small pure functions.
 
-This is the honest part of each project: the checks that do not need a model. The demo runs these live,
-so you can edit an input and watch a wrong number get caught. The generative text in the UI is a bundled
-sample; set NVIDIA_API_KEY and install the full project to produce it with the real models.
+These are the checks that do not need a model: number verification against a cited source, threshold
+rules, and candidate ranking. The demo runs them on each input change. The generated text in the UI is a
+bundled sample; install the full project and set NVIDIA_API_KEY to produce it with the real models.
 """
 
 from __future__ import annotations
@@ -10,7 +10,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 
-# ---- consult-to-note and csr-assistant: never let the model do arithmetic -------------------------
+# ---- consult-to-note and csr-assistant: numbers are checked against the cited source ----------------
 @dataclass
 class NumberCheck:
     text: str
@@ -27,7 +27,7 @@ def check_number(text: str, claimed: float, source_id: str, sources: dict[str, f
     return NumberCheck(text=text, claimed=claimed, source_id=source_id, source_value=sv if sv is not None else float("nan"), ok=ok)
 
 
-# ---- trial-matcher: never guess; stale or missing is "unknown" ------------------------------------
+# ---- trial-matcher: thresholds in code; a missing value is reported as unknown ----------------------
 @dataclass
 class Verdict:
     criterion: str
@@ -47,8 +47,8 @@ def eval_threshold(criterion: str, value: float | None, op: str, bound: float, b
 def rank_candidates(target: str, n: int = 5, seed: int = 0) -> list[dict]:
     """A deterministic stand-in for the BioNeMo pipeline: produces n scored candidates and ranks them.
 
-    The scores are simulated and meaningless; this demonstrates the orchestration and the ranking, not
-    the biology. The real pipeline folds each binder WITH the target and scores the complex.
+    The scores are simulated placeholders. The real pipeline folds each binder together with the target
+    and scores the complex.
     """
     import random
 

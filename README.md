@@ -11,20 +11,19 @@ license: apache-2.0
 
 # Clinical Agentic AI, interactive demo
 
-An interactive demo of four open examples of agentic AI for healthcare, built on the open NVIDIA stack.
-One idea runs through all of them: in healthcare a fluent wrong answer is the real risk, so the model
-cites its evidence, code checks every number, and a human signs off.
+An interactive demo of four clinical AI agents built with the NVIDIA NeMo stack. In all four, the model
+drafts, code checks numbers and citations, and a person reviews the result.
 
-The demo runs each project's deterministic **verification logic live** (catching a wrong dose, refusing
-to guess, flagging a mismatched number, ranking candidates). The generated clinical text is a bundled
-sample; the real pipelines run Nemotron, NeMo Agent Toolkit, NeMo Guardrails and BioNeMo.
+The demo runs each project's verification logic (number checks against a cited source, eligibility
+thresholds, candidate ranking) on every input change. The generated clinical text is a bundled sample;
+the full projects produce it with Nemotron, NeMo Agent Toolkit, NeMo Guardrails and BioNeMo.
 
 ## The four tabs
 
-- **consult-to-note**: a transcript becomes a cited note; toggle an injected dose error and watch it get caught.
-- **trial-matcher**: per-criterion eligibility with thresholds in code; a missing value returns "unknown", not a guess.
-- **csr-assistant**: a drafted study report checked number by number against the cited table row.
-- **ai-scientist**: a deterministic simulated BioNeMo pipeline that ranks candidate binders.
+- **consult-to-note**: two consultations; the note's numbers are checked against the transcript, and an error can be planted to see it flagged.
+- **trial-matcher**: two patients; thresholds are evaluated in code, a missing lab value is reported as unknown, and the record can be edited.
+- **csr-assistant**: two report sections; each drafted sentence is checked against the table row it cites, and the flagged number can be corrected.
+- **ai-scientist**: a simulated BioNeMo pipeline; change the target, seed and number of candidates to see the ranking update.
 
 ## Run locally
 
