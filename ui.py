@@ -72,7 +72,7 @@ def source_card(rows: list[tuple[str, str]]) -> None:
 
 def check_card(text: str, status: str, meta: str, cite: str | None = None, label: str | None = None) -> None:
     """status: ok | flag | unknown | neutral; label overrides the chip text"""
-    label = label or {"ok": "verified", "flag": "flagged", "unknown": "unknown", "neutral": "stated"}[status]
+    label = label or {"ok": "Selected value matched", "flag": "flagged", "unknown": "unknown", "neutral": "stated"}[status]
     cite_html = f' <span class="pill cite">cite {html.escape(cite)}</span>' if cite else ""
     st.markdown(
         f'<div class="chk {status}"><div class="body"><div class="text">{html.escape(text)}</div>'
@@ -82,10 +82,10 @@ def check_card(text: str, status: str, meta: str, cite: str | None = None, label
 
 
 def rank_table(rows: list[dict]) -> None:
-    head = "".join(f"<th>{h}</th>" for h in ["#", "Candidate", "Boltz-2 confidence", "Affinity (pIC50)", "ProteinMPNN score", "Composite"])
+    head = "".join(f"<th>{h}</th>" for h in ["#", "Candidate", "Simulated confidence", "Simulated MPNN score", "Illustrative composite score"])
     body = ""
     for i, r in enumerate(rows, 1):
         cls = ' class="top"' if i == 1 else ""
         body += (f"<tr{cls}><td>{i}</td><td>{html.escape(r['candidate'])}</td><td>{r['confidence']:.3f}</td>"
-                 f"<td>{r['affinity_pIC50']:.2f}</td><td>{r['mpnn_score']:.3f}</td><td>{r['composite']:.4f}</td></tr>")
+                 f"<td>{r['mpnn_score']:.3f}</td><td>{r['composite']:.4f}</td></tr>")
     st.markdown(f'<table class="rank"><thead><tr>{head}</tr></thead><tbody>{body}</tbody></table>', unsafe_allow_html=True)

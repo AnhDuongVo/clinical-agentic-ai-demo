@@ -60,4 +60,12 @@ Apache-2.0.
 
 ## Validation and scope
 
-Three pure-function regression tests passed locally on Python 3.12. These check the demo's simplified number comparison, missing-value threshold, and repeatable ranking. They do not establish parity with the full applications. Install `requirements-dev.txt` and run `pytest -q`. The generated text is bundled, scores are placeholders, and human approval is illustrated rather than completed by this page.
+Six pure-function regression tests passed locally on Python 3.12. These check the demo's simplified number comparison, missing-value threshold, and repeatable ranking. They do not establish parity with the full applications. Install `requirements-dev.txt` and run `pytest -q`. The generated text is bundled, scores are placeholders, and human approval is illustrated rather than completed by this page.
+
+## Numerical and ranking scope
+
+The badge “Selected value matched” compares one supplied scalar, not every number or the meaning of a sentence. For blood pressure 148/92, the sample compares 148 only. Counts are exact; continuous CSR values allow an explicit absolute tolerance of 0.005. Other claims remain unchecked. This is an offline illustration, not ICH E3 document review.
+
+Protein-only ranking mirrors the full project: `0.7 * confidence + 0.3 * max(0, 1.5 - mpnn_score) / 1.5`. All inputs are simulated; there is no affinity term. The full project co-folds a target only when `target_sequence` is supplied.
+
+Previous README animations are retained in `old-videos/2026-10-10/`. Portfolio video backups are in the website repository’s `old-videos/2026-10-10/`.

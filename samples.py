@@ -59,6 +59,7 @@ TRIAL_PATIENTS = {
 # and which sentence the demo lets you edit (index, label).
 CSR_SECTIONS = {
     "Efficacy: change in HbA1c": {
+        "discrete_rows": {"r2"},
         "table": {"r1": -1.21, "r2": 240.0, "r3": -0.35},
         "draft": [
             ("Mean change in HbA1c was -1.21 in the treatment arm.", "r1", -1.21),
@@ -68,11 +69,12 @@ CSR_SECTIONS = {
         "editable": (2, "Placebo-arm change as written in the draft"),
     },
     "Safety: adverse events": {
+        "discrete_rows": {"s1", "s2", "s4"},
         "table": {"s1": 12.0, "s2": 240.0, "s3": 5.0, "s4": 2.0},
         "draft": [
             ("Nausea was reported by 12 of 240 patients.", "s1", 12.0),
             ("That corresponds to 5.0 percent of the safety population.", "s3", 5.0),
-            ("Three patients discontinued because of adverse events.", "s4", 3.0),
+            ("3 patients discontinued because of adverse events.", "s4", 3.0),
         ],
         "editable": (2, "Discontinuations as written in the draft"),
     },

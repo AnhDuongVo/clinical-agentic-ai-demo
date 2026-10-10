@@ -20,10 +20,16 @@ class NumberCheck:
     ok: bool
 
 
-def check_number(text: str, claimed: float, source_id: str, sources: dict[str, float], rel_tol: float = 0.01) -> NumberCheck:
-    """A claimed number is correct only if it matches the cited source within tolerance."""
+def check_number(text: str, claimed: float, source_id: str, sources: dict[str, float], rel_tol: float = 0.0, *, discrete: bool = False, abs_tol: float = 0.0) -> NumberCheck:
+    """Compare one selected scalar. Counts are exact; continuous tolerances are explicit."""
+    import math
+
+    if rel_tol < 0 or abs_tol < 0:
+        raise ValueError("Tolerances must be nonnegative")
     sv = sources.get(source_id)
-    ok = sv is not None and abs(claimed - sv) <= max(abs(sv) * rel_tol, 1e-6)
+    ok = sv is not None and math.isfinite(claimed) and math.isfinite(sv) and (
+        claimed == sv if discrete else math.isclose(claimed, sv, rel_tol=rel_tol, abs_tol=abs_tol)
+    )
     return NumberCheck(text=text, claimed=claimed, source_id=source_id, source_value=sv if sv is not None else float("nan"), ok=ok)
 
 
@@ -47,8 +53,8 @@ def eval_threshold(criterion: str, value: float | None, op: str, bound: float, b
 def rank_candidates(target: str, n: int = 5, seed: int = 0) -> list[dict]:
     """A deterministic stand-in for the BioNeMo pipeline: produces n scored candidates and ranks them.
 
-    The scores are simulated placeholders. The real pipeline folds each binder together with the target
-    and scores the complex.
+    The scores are simulated placeholders. The full pipeline co-folds with the target only when target_sequence is supplied.
+    This illustration mirrors its protein-only ranking formula, using simulated inputs.
     """
     import random
 
@@ -56,8 +62,7 @@ def rank_candidates(target: str, n: int = 5, seed: int = 0) -> list[dict]:
     cands = []
     for i in range(n):
         conf = round(0.45 + 0.5 * rng.random(), 3)       # Boltz-2 complex confidence (simulated)
-        aff = round(4 + 4 * rng.random(), 2)             # pIC50-like affinity (simulated)
         mpnn = round(0.8 + 0.4 * rng.random(), 3)        # ProteinMPNN score, lower better (simulated)
-        composite = round(conf * 0.5 + (aff / 8) * 0.3 + (1 - (mpnn - 0.8) / 0.4) * 0.2, 4)
-        cands.append({"candidate": f"binder_{i+1}", "confidence": conf, "affinity_pIC50": aff, "mpnn_score": mpnn, "composite": composite})
+        composite = 0.7 * conf + 0.3 * max(0.0, 1.5 - mpnn) / 1.5
+        cands.append({"candidate": f"binder_{i+1}", "confidence": conf, "mpnn_score": mpnn, "composite": composite})
     return sorted(cands, key=lambda c: c["composite"], reverse=True)
