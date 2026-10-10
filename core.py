@@ -1,4 +1,4 @@
-"""The verification logic behind the demo, as small pure functions.
+"""Simplified illustrative checks for the interactive demo; not parity with full repositories.
 
 These are the checks that do not need a model: number verification against a cited source, threshold
 rules, and candidate ranking. The demo runs them on each input change. The generated text in the UI is a

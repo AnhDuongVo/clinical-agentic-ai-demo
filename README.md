@@ -12,9 +12,10 @@ license: apache-2.0
 # Clinical Agentic AI, interactive demo
 
 An interactive demo of four clinical AI agents built with the NVIDIA NeMo stack. In all four, the model
-drafts, code checks numbers and citations, and a person reviews the result.
+drafts, deterministic checks screen selected values, and human review is required before use.
+The interactive illustration itself does not implement the full review workflows.
 
-The demo runs each project's verification logic (number checks against a cited source, eligibility
+The demo uses simplified illustrative checking logic (number checks against a cited source, eligibility
 thresholds, candidate ranking) on every input change. The generated clinical text is a bundled sample;
 the full projects produce it with Nemotron, NeMo Agent Toolkit, NeMo Guardrails and BioNeMo.
 
@@ -55,3 +56,8 @@ streamlit run app.py
 ## License
 
 Apache-2.0.
+
+
+## Validation and scope
+
+Three pure-function regression tests passed locally on Python 3.12. These check the demo's simplified number comparison, missing-value threshold, and repeatable ranking. They do not establish parity with the full applications. Install `requirements-dev.txt` and run `pytest -q`. The generated text is bundled, scores are placeholders, and human approval is illustrated rather than completed by this page.

@@ -3,7 +3,7 @@
 Run locally:   streamlit run app.py
 Deploy:        Hugging Face Spaces (SDK: Streamlit) or Streamlit Community Cloud.
 
-The page runs each project's verification logic (citation checks, number checks, eligibility rules,
+The page uses simplified illustrative checking logic (citation checks, number checks, eligibility rules,
 candidate ranking). The generated clinical text is a bundled sample. To produce it with the real models,
 install the full project and set an NVIDIA_API_KEY.
 """
@@ -21,11 +21,11 @@ inject_css()
 
 hero(
     "Demo",
-    "Four clinical AI agents",
+    "Four clinical AI workflow illustrations",
     "One agent per tab. The citation and number checks run in this page; the generated text is a bundled sample. "
-    "No API key is needed.",
+    "Synthetic data and simplified checking logic. No API key is needed.",
 )
-info("Built with the NVIDIA NeMo stack (NeMo Agent Toolkit, NIM, Nemotron, Guardrails, BioNeMo). "
+info("Illustrates workflows from the full NVIDIA-based projects; this page runs simplified offline logic. "
      "Change the inputs to see how the checks respond.")
 
 tabs = st.tabs(["consult-to-note", "trial-matcher", "csr-assistant", "ai-scientist"])
