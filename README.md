@@ -19,6 +19,12 @@ The demo uses simplified illustrative checking logic (number checks against a ci
 thresholds, candidate ranking) on every input change. The generated clinical text is a bundled sample;
 the full projects produce it with Nemotron, NeMo Agent Toolkit, NeMo Guardrails and BioNeMo.
 
+## Motivation and purpose
+
+The full projects have different setup requirements and optional model endpoints. This small offline application gives visitors a way to explore their central workflow ideas without credentials: linking notes to evidence, preserving unknown eligibility criteria, comparing report text with source tables, and inspecting candidate rankings.
+
+The program provides four Streamlit tabs with synthetic inputs and bundled outputs. Changing a dose, laboratory value, report value or candidate configuration updates the simplified checks or ranking. It is an interactive explanation of the projects, rather than an implementation of their complete pipelines or a clinical decision tool.
+
 ## The four tabs
 
 | consult-to-note | trial-matcher |
