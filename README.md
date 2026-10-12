@@ -33,6 +33,8 @@ The program provides four Streamlit tabs with synthetic inputs and bundled outpu
 | **csr-assistant** | **ai-scientist** |
 | ![csr-assistant](docs/csr-assistant.gif) | ![ai-scientist](docs/ai-scientist.gif) |
 
+The consult-to-note GIF now records the full repository’s [SOAP workflow interface](https://github.com/AnhDuongVo/consult-to-note/blob/main/examples/soap_workflow.py), using scripted model responses. It is separate from this app’s simplified selected-number tab. The other GIFs record this app.
+
 Full-quality videos are on [anhduongvo.github.io](https://anhduongvo.github.io/projects/clinical-agentic-ai/).
 
 - **consult-to-note**: two consultations; the note's numbers are checked against the transcript, and an error can be planted to see it flagged.
