@@ -25,7 +25,7 @@ The full projects have different setup requirements and optional model endpoints
 
 The program provides four Streamlit tabs with synthetic inputs and bundled outputs. Changing a dose, laboratory value, report value or candidate configuration updates the simplified checks or ranking. It is an interactive explanation of the projects, rather than an implementation of their complete pipelines or a clinical decision tool.
 
-## The four tabs
+## Full repository workflow recordings
 
 | consult-to-note | trial-matcher |
 |---|---|
@@ -33,14 +33,16 @@ The program provides four Streamlit tabs with synthetic inputs and bundled outpu
 | **csr-assistant** | **ai-scientist** |
 | ![csr-assistant](docs/csr-assistant.gif) | ![ai-scientist](docs/ai-scientist.gif) |
 
-The consult-to-note GIF now records the full repository’s [SOAP workflow interface](https://github.com/AnhDuongVo/consult-to-note/blob/main/examples/soap_workflow.py), using scripted model responses. It is separate from this app’s simplified selected-number tab. The other GIFs record this app.
+The GIFs now record the full repositories’ workflow interfaces, rather than this app’s simplified tabs. Consult-to-note, trial-matcher and csr-assistant run their actual pipelines with clearly labeled scripted model responses. Ai-scientist runs its actual orchestration with SimulatedBioNeMo. The inputs are synthetic; no live model generation or biological inference is shown. Each full repository documents how to run its interface.
 
 Full-quality videos are on [anhduongvo.github.io](https://anhduongvo.github.io/projects/clinical-agentic-ai/).
+
+The simplified tabs in this companion app retain the following behavior:
 
 - **consult-to-note**: two consultations; the note's numbers are checked against the transcript, and an error can be planted to see it flagged.
 - **trial-matcher**: two patients; thresholds are evaluated in code, a missing lab value is reported as unknown, and the record can be edited.
 - **csr-assistant**: two report sections; each drafted sentence is checked against the table row it cites, and the flagged number can be corrected.
-- **ai-scientist**: a simulated BioNeMo pipeline; change the target, seed and number of candidates to see the ranking update.
+- **ai-scientist**: standalone candidate ranking with simulated inputs; change the target, seed and number of candidates to see the ranking update. It does not call the full repository’s orchestration.
 
 ## Run locally
 
