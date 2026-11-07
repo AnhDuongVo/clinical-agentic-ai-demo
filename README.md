@@ -11,13 +11,13 @@ license: apache-2.0
 
 # Clinical Agentic AI, interactive demo
 
-An interactive demo of four clinical AI agents built with the NVIDIA NeMo stack. In all four, the model
+An interactive demo of four clinical AI agent prototypes. In all four, the model
 drafts, deterministic checks screen selected values, and human review is required before use.
 The interactive illustration itself does not implement the full review workflows.
 
 The demo uses simplified illustrative checking logic (number checks against a cited source, eligibility
 thresholds, candidate ranking) on every input change. The generated clinical text is a bundled sample;
-the full projects produce it with Nemotron, NeMo Agent Toolkit, NeMo Guardrails and BioNeMo.
+the full projects produce it with open-weight LLMs, an agent framework, guardrails and protein-design models.
 
 ## Motivation and purpose
 
@@ -33,7 +33,7 @@ The program provides four Streamlit tabs with synthetic inputs and bundled outpu
 | **csr-assistant** | **ai-scientist** |
 | ![csr-assistant](docs/csr-assistant.gif) | ![ai-scientist](docs/ai-scientist.gif) |
 
-The GIFs now record the full repositories’ workflow interfaces, rather than this app’s simplified tabs. Consult-to-note, trial-matcher and csr-assistant run their actual pipelines with clearly labeled scripted model responses. Ai-scientist runs its actual orchestration with SimulatedBioNeMo. The inputs are synthetic; no live model generation or biological inference is shown. Each full repository documents how to run its interface.
+The GIFs now record the full repositories’ workflow interfaces, rather than this app’s simplified tabs. Consult-to-note, trial-matcher and csr-assistant run their actual pipelines with clearly labeled scripted model responses. Ai-scientist runs its actual orchestration with its offline simulator. The inputs are synthetic; no live model generation or biological inference is shown. Each full repository documents how to run its interface.
 
 Full-quality videos are on [anhduongvo.github.io](https://anhduongvo.github.io/projects/clinical-agentic-ai/).
 

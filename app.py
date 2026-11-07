@@ -5,7 +5,7 @@ Deploy:        Hugging Face Spaces (SDK: Streamlit) or Streamlit Community Cloud
 
 The page uses simplified illustrative checking logic (citation checks, number checks, eligibility rules,
 candidate ranking). The generated clinical text is a bundled sample. To produce it with the real models,
-install the full project and set an NVIDIA_API_KEY.
+install the full project and configure a model endpoint.
 """
 
 from __future__ import annotations
@@ -25,7 +25,7 @@ hero(
     "One agent per tab. The citation and number checks run in this page; the generated text is a bundled sample. "
     "Synthetic data and simplified checking logic. No API key is needed.",
 )
-info("Illustrates workflows from the full NVIDIA-based projects; this page runs simplified offline logic. "
+info("Illustrates workflows from the full projects; this page runs simplified offline logic. "
      "Change the inputs to see how the checks respond.")
 
 tabs = st.tabs(["consult-to-note", "trial-matcher", "csr-assistant", "ai-scientist"])
